@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sistema de Gestión de Eventos en Python - Tutorial Completo</title>
+  <style>
+    /* RESET BÁSICO */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      gap: 20px;
+    }
+
+    /* Sidebar lateral */
+    nav#sidebar {
+      position: sticky;
+      top: 20px;
+      background: #e0fbfc;
+      border-radius: 8px;
+      padding: 20px 15px;
+      width: 280px;
+      height: fit-content;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      font-size: 0.95rem;
+    }
+
+    nav#sidebar h3 {
+      color: #005f73;
+      margin-bottom: 15px;
+      font-weight: 700;
+      border-bottom: 2px solid #0a9396;
+      padding-bottom: 6px;
+    }
+
+    nav#sidebar ul {
+      list-style: none;
+    }
+
+    nav#sidebar ul li {
+      margin-bottom: 10px;
+    }
+
+    nav#sidebar ul li a {
+      color: #007f7f;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    nav#sidebar ul li a:hover {
+      color: #005f73;
+      text-decoration: underline;
+    }
+
+    nav#sidebar ul li ul {
+      margin-left: 15px;
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    nav#sidebar ul li ul li {
+      margin-bottom: 8px;
+    }
+
+    /* Contenido principal */
+    main {
+      flex: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      color: #005f73;
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #0a9396;
+    }
+
+    section {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      padding: 25px 30px;
+      margin-bottom: 30px;
+      transition: transform 0.3s ease;
+      scroll-margin-top: 80px; /* Para desplazamiento suave con ancla */
+    }
+
+    section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      color: #0a9396;
+      margin-bottom: 15px;
+      border-bottom: 3px solid #005f73;
+      padding-bottom: 8px;
+      font-weight: 700;
+    }
+
+    p.description {
+      margin-bottom: 18px;
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    pre {
+      background: #e0fbfc;
+      border-left: 6px solid #005f73;
+      padding: 15px 20px;
+      overflow-x: auto;
+      font-size: 1rem;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Courier New', Courier, monospace;
+      color: #001219;
+    }
+
+    code {
+      font-weight: 600;
+      color: #001219;
+    }
+
+    /* COLORES PARA COMENTARIOS, PALABRAS CLAVE Y TEXTO */
+    .comment {
+      color: #6a9955;
+      font-style: italic;
+    }
+
+    .keyword {
+      color: #0000ff;
+      font-weight: bold;
+    }
+
+    .string {
+      color: #a31515;
+    }
+
+    /* Lista de pasos */
+    ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    ol li {
+      margin-bottom: 15px;
+      font-size: 1.05rem;
+      color: #555;
+    }
+
+    /* Botón volver arriba */
+    #btn-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #005f73;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      transition: background 0.3s ease;
+      display: none;
+      z-index: 100;
+    }
+
+    #btn-top:hover {
+      background: #0a9396;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 50px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        padding: 10px;
+      }
+
+      nav#sidebar {
+        width: 100%;
+        position: relative;
+        top: auto;
+        margin-bottom: 25px;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar" aria-label="Guía de contenido">
+  <h3>Guía del Tutorial</h3>
+  <ul>
+    <li><a href="#introduccion">Introducción</a></li>
+    <li><a href="#inicializacion">1. Inicializamos la lista</a></li>
+    <li><a href="#agregar-evento">2. Agregar nuevo evento</a></li>
+    <li><a href="#marcar-realizado">3. Marcar evento como realizado</a></li>
+    <li><a href="#mostrar-pendientes">4. Mostrar eventos pendientes</a></li>
+    <li><a href="#mostrar-realizados">5. Mostrar eventos realizados</a></li>
+    <li><a href="#eliminar-evento">6. Eliminar un evento</a></li>
+    <li><a href="#menu-principal">7. Menú principal</a></li>
+    <li><a href="#reflexiones-finales">Reflexiones Finales</a></li>
+  </ul>
+</nav>
+
+<main>
+  <header>
+    <h1>Sistema de Gestión de Eventos en Python</h1>
+    <p>Tutorial Paso a Paso para crear un sistema sencillo y funcional</p>
+  </header>
+
+  <section id="introduccion">
+    <h2>Introducción</h2>
+    <p class="description">
+      En este tutorial aprenderás a desarrollar un sistema básico en Python para la gestión de eventos, similar a un sistema de tareas. 
+      El sistema permitirá agregar nuevos eventos, marcarlos como realizados, mostrar listados de eventos pendientes y realizados, y eliminarlos.
+      Es ideal para quienes quieren iniciarse en la programación con ejemplos prácticos y fáciles de entender.
+    </p>
+  </section>
+
+  <section id="inicializacion">
+    <h2>1. Inicializamos la lista para guardar los eventos</h2>
+    <p class="description">
+      Para comenzar, creamos una lista llamada <code>eventos</code> que almacenará cada evento como un diccionario con atributos clave como nombre, descripción, fecha y estado.
+    </p>
+    <pre><code><span class="keyword">eventos = []</span>
+<span class="comment"># Aquí guardaremos los eventos como diccionarios con sus atributos</span></code></pre>
+  </section>
+
+  <section id="agregar-evento">
+    <h2>2. Función para agregar un nuevo evento</h2>
+    <p class="description">
+      Esta función solicita al usuario que ingrese la información del evento (nombre, descripción y fecha), y luego crea un diccionario con esos datos asignando un estado inicial de "pendiente". Finalmente, agrega el evento a la lista.
+    </p>
+    <pre><code><span class="keyword">def</span> agregar_evento():
+    <span class="comment"># Pedimos datos</span>
+    <span class="keyword">print</span>("\n--- Agregar nuevo evento ---")
+    nombre = <span class="keyword">input</span>("Nombre del evento: ")
+    descripcion = <span class="keyword">input</span>("Descripción del evento: ")
+    fecha = <span class="keyword">input</span>("Fecha del evento (YYYY-MM-DD): ")
+    
+    <span class="comment"># Creamos un diccionario con los datos</span>
+    evento = {
+        <span class="string">'nombre'</span>: nombre,
+        <span class="string">'descripcion'</span>: descripcion,
+        <span class="string">'fecha'</span>: fecha,
+        <span class="string">'estado'</span>: <span class="string">'pendiente'</span>
+    }
+    
+    <span class="comment"># Añadimos el evento a la lista</span>
+    eventos.append(evento)
+    <span class="keyword">print</span>("Evento agregado exitosamente.")</code></pre>
+  </section>
+
+  <section id="marcar-realizado">
+    <h2>3. Función para marcar un evento como realizado</h2>
+    <p class="description">
+      Esta función permite al usuario cambiar el estado de un evento de "pendiente" a "realizado". Busca el evento por nombre y actualiza su estado si lo encuentra.
+    </p>
+    <pre><code><span class="keyword">def</span> marcar_realizado():
+    <span class="keyword">print</span>("\n--- Marcar evento como realizado ---")
+    nombre = <span class="keyword">input</span>("Ingrese el nombre del evento a marcar: ")
+    
+    <span class="comment"># Buscamos el evento y cambiamos su estado</span>
+    <span class="keyword">for</span> evento <span class="keyword">in</span> eventos:
+        <span class="keyword">if</span> evento[<span class="string">'nombre'</span>].lower() == nombre.lower() <span class="keyword">and</span> evento[<span class="string">'estado'</span>] == <span class="string">'pendiente'</span>:
+            evento[<span class="string">'estado'</span>] = <span class="string">'realizado'</span>
+            <span class="keyword">print</span>("Evento marcado como realizado.")
+            <span class="keyword">return</span>
+    <span class="keyword">print</span>("No se encontró un evento pendiente con ese nombre.")</code></pre>
+  </section>
+
+  <section id="mostrar-pendientes">
+    <h2>4. Mostrar todos los eventos pendientes</h2>
+    <p class="description">
+      Esta función filtra y muestra todos los eventos cuyo estado sea "pendiente", proporcionando una vista clara de las tareas o eventos que aún no se han completado.
+    </p>
+    <pre><code><span class="keyword">def</span> mostrar_pendientes():
+    <span class="keyword">print</span>("\n--- Eventos Pendientes ---")
+    encontrados = <span class="keyword">False</span>
+    <span class="keyword">for</span> evento <span class="keyword">in</span> eventos:
+        <span class="keyword">if</span> evento[<span class="string">'estado'</span>] == <span class="string">'pendiente'</span>:
+            encontrados = <span class="keyword">True</span>
+            <span class="keyword">print</span>(f"* {evento['nombre']} | {evento['descripcion']} | Fecha: {evento['fecha']}")
+    <span class="keyword">if</span> <span class="keyword">not</span> encontrados:
+        <span class="keyword">print</span>("No hay eventos pendientes.")</code></pre>
+  </section>
+
+  <section id="mostrar-realizados">
+    <h2>5. Mostrar todos los eventos realizados</h2>
+    <p class="description">
+      Similar a la función anterior, esta muestra todos los eventos que han sido marcados como "realizados", permitiendo visualizar el progreso y las tareas completadas.
+    </p>
+    <pre><code><span class="keyword">def</span> mostrar_realizados():
+    <span class="keyword">print</span>("\n--- Eventos Realizados ---")
+    encontrados = <span class="keyword">False</span>
+    <span class="keyword">for</span> evento <span class="keyword">in</span> eventos:
+        <span class="keyword">if</span> evento[<span class="string">'estado'</span>] == <span class="string">'realizado'</span>:
+            encontrados = <span class="keyword">True</span>
+            <span class="keyword">print</span>(f"* {evento['nombre']} | {evento['descripcion']} | Fecha: {evento['fecha']} (Realizado)")
+    <span class="keyword">if</span> <span class="keyword">not</span> encontrados:
+        <span class="keyword">print</span>("No hay eventos realizados.")</code></pre>
+  </section>
+
+  <section id="eliminar-evento">
+    <h2>6. Eliminar un evento por nombre</h2>
+    <p class="description">
+      Esta función permite eliminar un evento de la lista si el nombre proporcionado coincide con alguno de los eventos existentes.
+    </p>
+    <pre><code><span class="keyword">def</span> eliminar_evento():
+    <span class="keyword">print</span>("\n--- Eliminar evento ---")
+    nombre = <span class="keyword">input</span>("Nombre del evento a eliminar: ")
+    <span class="keyword">global</span> eventos
+    eventos_filtrados = [e <span class="keyword">for</span> e <span class="keyword">in</span> eventos <span class="keyword">if</span> e[<span class="string">'nombre'</span>].lower() != nombre.lower()]
+    
+    <span class="keyword">if</span> len(eventos_filtrados) &lt; len(eventos):
+        eventos = eventos_filtrados
+        <span class="keyword">print</span>("Evento eliminado correctamente.")
+    <span class="keyword">else</span>:
+        <span class="keyword">print</span>("No se encontró un evento con ese nombre.")</code></pre>
+  </section>
+
+  <section id="menu-principal">
+    <h2>7. Menú principal para interactuar con el sistema</h2>
+    <p class="description">
+      Finalmente, el menú principal permite al usuario elegir qué acción desea realizar mediante un menú interactivo en consola. El programa se ejecuta en un ciclo hasta que el usuario decida salir.
+    </p>
+    <pre><code><span class="keyword">def</span> menu():
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        <span class="keyword">print</span>("\n===== MENÚ DE EVENTOS =====")
+        <span class="keyword">print</span>("1. Agregar nuevo evento")
+        <span class="keyword">print</span>("2. Marcar evento como realizado")
+        <span class="keyword">print</span>("3. Mostrar eventos pendientes")
+        <span class="keyword">print</span>("4. Mostrar eventos realizados")
+        <span class="keyword">print</span>("5. Eliminar un evento")
+        <span class="keyword">print</span>("6. Salir")
+
+        opcion = <span class="keyword">input</span>("Seleccione una opción (1-6): ")
+        <span class="keyword">if</span> opcion == <span class="string">'1'</span>:
+            agregar_evento()
+        <span class="keyword">elif</span> opcion == <span class="string">'2'</span>:
+            marcar_realizado()
+        <span class="keyword">elif</span> opcion == <span class="string">'3'</span>:
+            mostrar_pendientes()
+        <span class="keyword">elif</span> opcion == <span class="string">'4'</span>:
+            mostrar_realizados()
+        <span class="keyword">elif</span> opcion == <span class="string">'5'</span>:
+            eliminar_evento()
+        <span class="keyword">elif</span> opcion == <span class="string">'6'</span>:
+            <span class="keyword">print</span>("Gracias por usar el sistema de gestión de eventos.")
+            <span class="keyword">break</span>
+        <span class="keyword">else</span>:
+            <span class="keyword">print</span>("Opción inválida, intenta de nuevo.")
+
+menu()</code></pre>
+  </section>
+
+  <section id="reflexiones-finales">
+    <h2>Reflexiones Finales</h2>
+    <p class="description">
+      Este tutorial ha guiado paso a paso en la creación de un sistema básico de gestión de eventos utilizando Python, enfocándonos en la simplicidad y funcionalidad esencial.
+      A lo largo del proceso, se aprendió a manejar estructuras de datos como listas y diccionarios, a implementar funciones para modularizar el código, y a gestionar el estado de los eventos.
+    </p>
+    <p class="description">
+      La implementación práctica de agregar, modificar, mostrar y eliminar eventos proporciona una base sólida para expandir este sistema hacia proyectos más complejos, como interfaces gráficas, bases de datos o incluso aplicaciones web.
+      La comprensión de estos fundamentos es clave para cualquier desarrollador que quiera construir aplicaciones útiles y escalables.
+    </p>
+    <p class="description">
+      Finalmente, te invito a seguir practicando, experimentando con nuevas funcionalidades, y adaptando este código a tus necesidades específicas. La programación es un arte en constante aprendizaje, y cada proyecto es una oportunidad para mejorar.
+    </p>
+    <p class="description" style="font-style: italic; color: #555;">
+      ¡Gracias por seguir este tutorial y mucho éxito en tus proyectos futuros!
+    </p>
+  </section>
+
+</main>
+
+<button id="btn-top" aria-label="Volver arriba">⬆️</button>
+
+<footer>
+  &copy; 2025 Sistema de Gestión de Eventos - Tutorial en Python
+</footer>
+
+<script>
+  // Botón volver arriba
+  const btnTop = document.getElementById('btn-top');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      btnTop.style.display = 'block';
+    } else {
+      btnTop.style.display = 'none';
+    }
+  });
+
+  btnTop.addEventListener('click', () => {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+</script>
+
+</body>
+</html>
